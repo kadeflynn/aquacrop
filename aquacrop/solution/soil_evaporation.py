@@ -32,6 +32,7 @@ def soil_evaporation(
     FieldMngt_Mulches: bool,
     FieldMngt_fMulch: float,
     FieldMngt_MulchPct: float,
+    # Add residue inputs 
     NewCond_DAP: int,
     NewCond_Wsurf: float,
     NewCond_EvapZ: float,
@@ -267,6 +268,27 @@ def soil_evaporation(
         elif FieldMngt_Mulches:
             # mulches present
             EsPotMul = EsPot * (1 - FieldMngt_fMulch * (FieldMngt_MulchPct / 100))
+        elif FieldMngm_Residue:
+            # residue present
+            potential_residue_evaporation = _calculate_potential_residue_evaporation(
+                EsPot,
+                prof.residue.extinction_coefficient,
+                prof.residue.mulch_area_index,
+            )
+
+            actual_residue_evaporation = _calculate_actual_residue_evaporation(
+                potential_residue_evaporation,
+                prof.residue_water_content,
+                prof.residue.fraction_cover,
+            )
+
+            EsPotMul = _residue_cover_soil_evaporation_reduction(
+                EsPot,
+                actual_residue_evaporation,
+                prof.residue.fraction_cover,
+                prof.residue.mulch_area_index,
+                prof.residue.extinction_coefficient,
+            )
 
     else:
         # Surface is flooded - no adjustment of potential soil evaporation for
@@ -494,3 +516,40 @@ def soil_evaporation(
         EsAct,
         EsPot,
     )
+
+
+def _residue_cover_soil_evaporation_reduction(potential_surface_evaporation: int, 
+                                         actual_residue_evaporation: int,
+                                         residue_fraction_cover: int,
+                                         residue_area_index: int,
+                                         residue_extinction_coefficient: int) -> int:
+    '''Based on Scopel et al. 2004, implemented as in DSSAT v4.5'''
+
+    potential_soil_evaporation_1 = potential_surface_evaporation - actual_residue_evaporation
+    potential_soil_evaporation_2 = potential_surface_evaporation * math.exp(-residue_extinction_coefficient*residue_area_index) \
+                                    *residue_fraction_cover + potential_surface_evaporation*(1-residue_fraction_cover)
+
+    potential_soil_evaporation = min(potential_soil_evaporation_1, potential_soil_evaporation_2)
+
+    return potential_soil_evaporation
+
+def _calculate_actual_residue_evaporation(potential_residue_evaporation: int,
+                                         residue_water_content: int, 
+                                         residue_fraction_cover: int) -> int:
+    '''Based on Scopel et al. 2004'''
+
+    actual_residue_evaporation = min(potential_residue_evaporation,
+                                     0.85*residue_water_content) * residue_fraction_cover
+    
+    return actual_residue_evaporation
+
+def _calculate_potential_residue_evaporation(potential_surface_evaporation: int,
+                                            residue_extinction_coefficient: int,
+                                            mulch_area_index: int) -> int:
+    
+    '''Based on Scopel et al. 2004'''
+
+    potential_residue_evaporation = potential_surface_evaporation *\
+                                    (1 - math.exp(-residue_extinction_coefficient * mulch_area_index))
+    
+    return potential_residue_evaporation
