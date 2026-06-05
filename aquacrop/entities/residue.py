@@ -16,24 +16,23 @@ class Residue:
     ----------
     type : str
         Type of residue.
-    percent_cover : int
-        Percent of soil surface coered with residue.
+    initial_fraction_cover : float
+        Initial fraction of soil surface covered with residue.
     '''
 
-    def __init__(self, type: str, percent_cover = Optional[int], mass = Optional[int]):
+    def __init__(self, type: str, initial_fraction_cover: Optional[float] = None, initial_mass: Optional[float] = None):
         self.type = type
-        self.percent_cover = percent_cover
-        self.mass = mass
+        self.initial_fraction_cover = initial_fraction_cover
+        self.initial_mass = initial_mass
         self.area_covered_per_mass = None
         self.saturated_water_coefficient = None
-        self.mulch_area_index = None
-        self.fraction_cover = self.percent_cover / 100
+        #self.mulch_area_index = None this is calculated in the residue decomposition function and updated as residue decomposes, so not defined here
         self.extinction_coefficient = None
-        self.albedo = 0.45
+        #self.albedo = 0.45
 
         self.__get_constants()
-        self._calc_mass()
-        self._calc_mulch_area_index()
+        self._calc_initial_mass()
+        self._calc_initial_fraction_cover()
 
 
     def __get_constants(self):
@@ -51,32 +50,20 @@ class Residue:
         else:
             raise ValueError("Invalid residue type")
 
-    def _calc_mass(self):
+    def _calc_initial_mass(self):
         '''Calculate mass of surface mulch (kg/ha) given fractional soil coverage'''
-        if self.percent_cover != None:
-            self.mass = math.log(1 - self.fraction_cover) / -(self.area_covered_per_mass * 1e-5)
+        if self.initial_fraction_cover != None:
+            self.initial_mass = math.log(1 - self.initial_fraction_cover) / -(self.area_covered_per_mass * 1e-5)
         else:
             pass
-    def _calc_fraction_cover(self):
+
+    def _calc_initial_fraction_cover(self):
         '''Calcualte fractional soil coverage of residue given the mass of surface mulch (kg/ha)'''
-        if self.mass != None:
-            self.fraction_cover = 1 - math.exp((self.area_covered_per_mass * 1e-5) * self.mass)
+        if self.initial_mass != None:
+            self.initial_fraction_cover = 1 - math.exp(-(self.area_covered_per_mass * 1e-5) * self.initial_mass)
         else:
             pass
 
-    def _calc_mulch_area_index(self):
-        self.mulch_area_index = (self.area_covered_per_mass * 1e-5 * self.mass) / self.fraction_cover
+    # def _calc_mulch_area_index(self):
+    #     self.mulch_area_index = (self.area_covered_per_mass * 1e-5 * self.mass) / self.fraction_cover
     
-
-class ResidueStruct:
-    def __init__(self):
-        self.mulches = False
-        self.bunds = False
-        self.curve_number_adj = False
-        self.sr_inhb = False
-
-        self.mulch_pct = 0.0
-        self.f_mulch = 0.0
-        self.z_bund = 0.0
-        self.bund_water = 0.0
-        self.curve_number_adj_pct = 0.0

@@ -50,7 +50,7 @@ def simulate_residue_decomposition(
         (NewCond_mass,
          NewCond_decomp_days,
          NewCond_saturated_water_capacity,
-         NewCond_mulch_area_index,
+         NewCond_residue_area_index,
          NewCond_fraction_cover)
     """
     # Read parameters and starting states
@@ -80,29 +80,29 @@ def simulate_residue_decomposition(
         NewCond_mass,
     )
 
-    NewCond_mulch_area_index = _calculate_mulch_area_index(
+    NewCond_residue_area_index = _calculate_residue_area_index(
         NewCond_mass,
         residue.area_covered_per_mass,
         NewCond_fraction_cover,
     )
 
-    NewCond_fraction_cover = 1 - math.exp(-NewCond_mulch_area_index)
+    NewCond_fraction_cover = 1 - math.exp(-NewCond_residue_area_index)
 
     return (
         NewCond_mass,
         NewCond_decomp_days,
         NewCond_saturated_water_capacity,
-        NewCond_mulch_area_index,
+        NewCond_residue_area_index,
         NewCond_fraction_cover,
     )
 
-def _calculate_mulch_area_index(mass: float, area_covered_per_mass: float, fraction_cover: float) -> float:
+def _calculate_residue_area_index(mass: float, area_covered_per_mass: float, fraction_cover: float) -> float:
     if fraction_cover <= 0:
         return 0.0
 
-    mulch_area_index = (area_covered_per_mass * 1e-5 * mass) / fraction_cover
+    residue_area_index = (area_covered_per_mass * 1e-5 * mass) / fraction_cover
 
-    return mulch_area_index
+    return residue_area_index
 
 def _calculate_saturated_water_capacity(residue_saturated_water_coefficient: float,
                                        mass: float) -> float:

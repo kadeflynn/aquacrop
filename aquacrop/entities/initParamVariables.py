@@ -110,3 +110,7 @@ class InitialCondition:
 
         self.depletion = 0
         self.taw = 0
+
+        self.residue_decomp_days = 0
+        self.residue_water_storage = 0
+        self.residue_area_index = 0

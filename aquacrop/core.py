@@ -352,6 +352,7 @@ class AquaCropModel:
             outputs.water_flux,
             outputs.water_storage,
             outputs.crop_growth,
+            outputs.residue_outputs,
             self.__steps_are_finished,
         )
 
@@ -360,6 +361,7 @@ class AquaCropModel:
                 outputs.water_flux,
                 outputs.water_storage,
                 outputs.crop_growth,
+                outputs.residue_outputs,
             ) = final_water_flux_growth_outputs
 
         return clock_struct, _init_cond, param_struct, outputs

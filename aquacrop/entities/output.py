@@ -19,6 +19,8 @@ class Output:
 
         final_stats (pandas.DataFrame, numpy array): final stats at end of each season
 
+        residue_outputs (pandas.DataFrame, numpy array): daily residue variables
+
     """
 
     def __init__(self, time_span, initial_th):
@@ -38,3 +40,4 @@ class Output:
                 "Seasonal irrigation (mm)",
             ]
         )
+        self.residue_outputs = np.zeros((len(time_span), 6))

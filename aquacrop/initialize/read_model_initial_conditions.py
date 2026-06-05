@@ -77,6 +77,17 @@ def read_model_initial_conditions(
         else:
             # No surface bunds
             InitCond.surface_storage = 0
+        
+        if ParamStruct.FallowFieldMngt.residue != None:
+            InitCond.residue_mass = ParamStruct.FallowFieldMngt.residue.initial_mass
+            InitCond.residue_fraction_cover = ParamStruct.FallowFieldMngt.residue.initial_fraction_cover
+            InitCond.saturated_water_capacity = ParamStruct.FallowFieldMngt.residue.saturated_water_coefficient * InitCond.residue_mass * 1e-4
+            InitCond.residue_water_storage = 0
+        else:
+            InitCond.residue_mass = 0
+            InitCond.residue_fraction_cover = 0
+            InitCond.saturated_water_capacity = 0
+            InitCond.residue_water_storage = 0
 
     elif ClockStruct.season_counter == 0:
         # First day of simulation is in first growing season
@@ -90,6 +101,17 @@ def read_model_initial_conditions(
         else:
             # No surface bunds
             InitCond.surface_storage = 0
+        
+        if FieldMngtTmp.residue != None:
+            InitCond.residue_mass = FieldMngtTmp.residue.initial_mass
+            InitCond.residue_fraction_cover = FieldMngtTmp.residue.initial_fraction_cover
+            InitCond.saturated_water_capacity = FieldMngtTmp.residue.saturated_water_coefficient * InitCond.residue_mass * 1e-4
+            InitCond.residue_water_storage = 0
+        else:
+            InitCond.residue_mass = 0
+            InitCond.residue_fraction_cover = 0
+            InitCond.saturated_water_capacity = 0
+            InitCond.residue_water_storage = 0
 
     ############
     # watertable

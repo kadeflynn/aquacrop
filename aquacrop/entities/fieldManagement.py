@@ -1,3 +1,8 @@
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from aquacrop.entities.residue import Residue
+
 
 class FieldMngt:
     """
@@ -36,6 +41,7 @@ class FieldMngt:
         z_bund=0,
         bund_water=0,
         curve_number_adj_pct=0,
+        residue: Optional["Residue"] = None,
     ):
 
         self.mulches = mulches  #  Soil surface covered by mulches (yield_ or N)
@@ -48,6 +54,7 @@ class FieldMngt:
         self.z_bund = z_bund * 1000 # Bund height, user-specified as (m), here immediately converted to (mm)
         self.bund_water = bund_water  # Initial water height in surface bunds (mm)
         self.curve_number_adj_pct = curve_number_adj_pct  # Percentage change in curve number (positive or negative)
+        self.residue = residue 
 
 
 
@@ -70,4 +77,4 @@ class FieldMngtStruct:
         self.z_bund = 0.0
         self.bund_water = 0.0
         self.curve_number_adj_pct = 0.0
-
+        self.residue = None

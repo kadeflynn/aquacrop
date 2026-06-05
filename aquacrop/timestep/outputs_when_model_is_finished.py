@@ -10,6 +10,7 @@ def outputs_when_model_is_finished(
     flux_output: "ndarray",
     water_output: "ndarray",
     growth_outputs: "ndarray",
+    residue_outputs: "ndarray",
     steps_are_finished: bool,
 ):
     """
@@ -91,6 +92,18 @@ def outputs_when_model_is_finished(
             ],
         )
 
-        return flux_output_df, water_output_df, growth_outputs_df
+        residue_outputs_df = pd.DataFrame(
+            residue_outputs,
+            columns=[
+                "time_step_counter",
+                "season_counter",
+                "dap",
+                "residue_mass",
+                "residue_fraction_cover",
+                "residue_water_storage",
+            ],
+        )
+
+        return flux_output_df, water_output_df, growth_outputs_df, residue_outputs_df
 
     return False

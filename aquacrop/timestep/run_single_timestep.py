@@ -1,3 +1,4 @@
+from aquacrop.solution.residue_water import residue_rainfall_interception
 import numpy as np
 
 from aquacrop.entities.output import Output
@@ -220,6 +221,14 @@ def solution_single_time_step(
         Soil.z_cn,
         Soil.nComp,
         Soil.Profile,
+    )
+
+    # 5.5 Residue Interception (reduces Infl by amount of water intercepted by residue
+    (Infl, NewCond.residue_water_storage) = residue_rainfall_interception(
+        Infl,
+        NewCond.residue_fraction_cover,
+        NewCond.residue_water_storage,
+        NewCond.saturated_water_capacity
     )
 
     # 6. Irrigation
@@ -538,5 +547,15 @@ def solution_single_time_step(
 
             # Set harvest flag
             NewCond.harvest_flag = True
+    
+    # Residue outputs
+    outputs.residue_outputs[row_day, :] = [
+        clock_struct.time_step_counter,
+        clock_struct.season_counter,
+        NewCond.dap,
+        NewCond.residue_mass,
+        NewCond.residue_fraction_cover,
+        NewCond.residue_water_storage,
+    ]
 
     return NewCond, param_struct, outputs
